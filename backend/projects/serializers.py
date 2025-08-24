@@ -4,11 +4,12 @@ from datetime import timedelta
 
 class EmployeeSerializer(serializers.ModelSerializer):
     project_count = serializers.SerializerMethodField()
+    department_display = serializers.CharField(source='get_department_display', read_only=True)
     
     class Meta:
         model = Employee
-        fields = ["id", "name", "email", "created_at", "project_count"]
-        read_only_fields = ["created_at"]
+        fields = ["id", "name", "email", "department", "department_display", "created_at", "project_count"]
+        read_only_fields = ["created_at", "department_display"]
     
     def get_project_count(self, obj):
         return obj.projects.count()

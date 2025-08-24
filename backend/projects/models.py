@@ -3,12 +3,24 @@ from datetime import timedelta, date
 from django.utils import timezone
 
 class Employee(models.Model):
+    DEPARTMENT_CHOICES = [
+        ('engineering', 'Engineering'),
+        ('design', 'Design'),
+        ('marketing', 'Marketing'),
+        ('sales', 'Sales'),
+        ('hr', 'Human Resources'),
+        ('finance', 'Finance'),
+        ('operations', 'Operations'),
+        ('other', 'Other'),
+    ]
+    
     name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
+    department = models.CharField(max_length=20, choices=DEPARTMENT_CHOICES, default='other')
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} ({self.get_department_display()})"
 
     class Meta:
         ordering = ['name']
