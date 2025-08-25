@@ -27,7 +27,22 @@ class ProjectViewSet(viewsets.ModelViewSet):
         """Get all tasks for this project"""
         tasks = Task.objects.filter(project_id=pk).order_by("order")
         return Response(TaskSerializer(tasks, many=True).data)
-
+    
+@action(detail=False, methods=["get"])
+def stats(self, request):
+    """Get overall project statistics"""
+    projects = Project.objects.all()
+    total_projects = projects.count()
+    total_tasks = Task.objects.count()
+    completed_tasks = Task.objects.filter(status='done').count()
+    
+    return Response({
+        'total_projects': total_projects,
+        'total_tasks': total_tasks,
+        'completed_tasks': completed_tasks,
+        'completion_rate': round((completed_tasks / total_tasks) * 100) if total_tasks > 0 else 0
+    })
+     
     @action(detail=True, methods=["post"])
     def auto_schedule(self, request, pk=None):
         """Auto-schedule all tasks in this project starting from project start date"""
